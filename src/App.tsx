@@ -5,8 +5,11 @@ import {
 	PlusCircle,
 	Trash,
 } from '@phosphor-icons/react';
-import ToDoLogo from './assets/todo.svg';
 import { ChangeEvent, FormEvent, useState, MouseEvent } from 'react';
+import { Header } from './components/Header';
+import { EmptyMessage } from './components/EmptyMessage';
+import { Report } from './components/Report';
+import { CreateTask } from './components/CreateTask';
 
 interface Task {
 	id: number;
@@ -14,7 +17,7 @@ interface Task {
 	isChecked: boolean;
 }
 
-function App() {
+export function App() {
 	const [tasks, setTasks] = useState<Task[]>([]);
 	const [newTask, setNewTask] = useState('');
 
@@ -66,33 +69,17 @@ function App() {
 
 	return (
 		<>
-			<header>
-				<img src={ToDoLogo} />
-			</header>
+			<Header />
 			<div className="content">
-				<form onSubmit={handleCreateNewTask}>
-					<input
-						type="text"
-						value={newTask}
-						onChange={handleNewTaskChange}
-						placeholder="Adicione uma nova tarefa"
-						required
-					/>
-					<button type="submit" disabled={newTask.length === 0}>
-						Criar <PlusCircle size={18} />
-					</button>
-				</form>
-				<div className="report">
-					<div className="created">
-						Tarefas criadas <span>{tasks.length}</span>
-					</div>
-					<div className="checked">
-						Concluídas{' '}
-						<span>
-							{countCheckedTasks()} de {tasks.length}
-						</span>
-					</div>
-				</div>
+				<CreateTask
+					newTask={newTask}
+					onNewTaskChange={handleNewTaskChange}
+					onCreateNewTask={handleCreateNewTask}
+				/>
+				<Report
+					tasksCount={tasks.length}
+					tasksCheckedCount={countCheckedTasks()}
+				/>
 				<ul>
 					{tasks.map((task) => {
 						return (
@@ -116,21 +103,8 @@ function App() {
 						);
 					})}
 				</ul>
-				{tasks.length === 0 && (
-					<div className="message">
-						<div className="icon">
-							<ClipboardText color="#808080" size={60} weight="thin" />
-						</div>
-						<p>
-							<strong>Você ainda não tem tarefas cadastradas</strong>
-							<br />
-							Crie tarefas e organize seus itens a fazer
-						</p>
-					</div>
-				)}
+				{tasks.length === 0 && <EmptyMessage />}
 			</div>
 		</>
 	);
 }
-
-export default App;
